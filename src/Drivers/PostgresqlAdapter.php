@@ -107,7 +107,7 @@ class PostgresqlAdapter implements EventStore
 		$events = $this->connection
 			->table($this->table)
 			->selectRaw($query)
-            ->where('aggregate_id', $aggregate_id)
+            ->whereNotNull('aggregate_id')
 			->orderBy('created_at', 'ASC')
 			->get();
 
