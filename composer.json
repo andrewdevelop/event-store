@@ -1,0 +1,27 @@
+{
+    "name": "andrewdevelop/event-store",
+    "description": "A basic event store for Lumen",
+    "type": "package",
+    "require": {
+        "andrewdevelop/hex-contracts": "dev-master",
+        "andrewdevelop/event-sourcing": "dev-master",
+        "illuminate/container": "^6.0",
+        "illuminate/database": "^6.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "andrewdevelop",
+            "email": "andrewdevelop@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Core\\EventStore\\": "src/"
+        }
+    },
+    "post-install-cmd": [
+        "@php -r \"file_exists('../../../../config/eventstore.php') || copy('./config/eventstore.php', '../../../../config/eventstore.php');\""
+    ]
+}
