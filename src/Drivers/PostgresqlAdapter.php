@@ -102,7 +102,7 @@ class PostgresqlAdapter implements EventStore
 
 	public function loadAll()
 	{
-		$query = 'id, name, version, aggregate_id, aggregate_type, aggregate_version, payload, metadata, DATE_FORMAT(created_at, \'%Y-%m-%d %H:%i:%s.%f\') as created_at';
+		$query = 'id, name, version, aggregate_id, aggregate_type, aggregate_version, payload, metadata, created_at';
 
 		$events = $this->connection
 			->table($this->table)
