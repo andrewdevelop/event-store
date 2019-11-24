@@ -85,6 +85,7 @@ class PostgresqlAdapter implements EventStore
 	{
 		$query = 'id, name, version, aggregate_id, aggregate_type, aggregate_version, payload, metadata, created_at';
 
+		/** @var \Illuminate\Support\Collection */
 		$events = $this->connection
 			->table($this->table)
 			->selectRaw($query)
@@ -92,7 +93,7 @@ class PostgresqlAdapter implements EventStore
 			->orderBy('created_at', 'ASC')
 			->get();
 		
-		if (!$events) {
+		if (count($events) == 0) {
 			throw new NotFoundException($aggregate_id);
 		}
 
