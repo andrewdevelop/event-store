@@ -97,7 +97,7 @@ class PostgresqlAdapter implements EventStore
 			throw new NotFoundException($aggregate_id);
 		}
 
-		return $events;	
+		return $events->toArray();	
 	}
 
 
