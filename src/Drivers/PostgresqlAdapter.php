@@ -81,17 +81,22 @@ class PostgresqlAdapter implements EventStore
 	}
 
 
-	public function load($aggregate_id) 
+	public function load($aggregate_id, $version = null) 
 	{
-		$query = 'id, name, version, aggregate_id, aggregate_type, aggregate_version, payload, metadata, created_at';
+		$select = 'id, name, version, aggregate_id, aggregate_type, aggregate_version, payload, metadata, created_at';
+
+		$query = $events = $this->connection
+				->table($this->table)
+				->selectRaw($select)
+	            ->where('aggregate_id', $aggregate_id)
+				->orderBy('created_at', 'ASC');
+
+		if ($version) {
+			$query->where('aggregate_version', '<=', $version);
+		} 
 
 		/** @var \Illuminate\Support\Collection */
-		$events = $this->connection
-			->table($this->table)
-			->selectRaw($query)
-            ->where('aggregate_id', $aggregate_id)
-			->orderBy('created_at', 'ASC')
-			->get();
+		$events = $query->get();
 		
 		if (count($events) == 0) {
 			throw new NotFoundException($aggregate_id);
