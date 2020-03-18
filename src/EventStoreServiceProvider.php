@@ -28,9 +28,13 @@ class EventStoreServiceProvider extends ServiceProvider
         $driver = $this->app->config->get('eventstore.connection');
         $config = $this->app->config->get("eventstore.connections.$driver");
 
-        /** @var \Illuminate\Database\Connection */
-        $factory = new \Illuminate\Database\Connectors\ConnectionFactory($this->app);
-        $connection = $factory->make($config, $driver);
+        if ($driver == 'in_memory' || $driver == null) {
+            $connection = null;
+        } else {
+            /** @var \Illuminate\Database\Connection */
+            $factory = new \Illuminate\Database\Connectors\ConnectionFactory($this->app);
+            $connection = $factory->make($config, $driver);
+        }
 
         $manager = new EventStoreManager($this->app);
         $eventstore = $manager->driver($driver);
