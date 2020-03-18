@@ -7,13 +7,23 @@ use InvalidArgumentException;
 
 use Core\EventSourcing\Contracts\EventStore;
 use Core\EventStore\Drivers\PostgresqlAdapter;
+use Core\EventStore\Drivers\InMemoryAdapter;
 
 class EventStoreManager extends Manager
 {
 
     /**
      * Create an instance of the specified driver.
-     * @return \Core\EventStore\Drivers\MysqlAdapter
+     * @return \Core\EventStore\Drivers\InMemoryAdapter
+     */
+    protected function createInMemoryDriver()
+    {
+        return $this->buildProvider(InMemoryAdapter::class);
+    }    
+
+    /**
+     * Create an instance of the specified driver.
+     * @return \Core\EventStore\Drivers\PostgresqlAdapter
      */
     protected function createPgsqlDriver()
     {
