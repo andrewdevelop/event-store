@@ -56,7 +56,8 @@ class InMemoryAdapter implements EventStore
 	
 	public function commit(iterable $events) 
 	{
-		return $this->store->merge($events);
+		$this->store = $this->store->merge($events);
+		return $this->store;
 	}
 
 
@@ -64,7 +65,7 @@ class InMemoryAdapter implements EventStore
 	{
 		return $this->store
 			->filter(function($e) use ($aggregate_id) {
-				return (array) ($e['aggregate_id']) == $aggregate_id;
+				return $e['aggregate_id'] == $aggregate_id;
 			})
 			->toArray();	
 	}
