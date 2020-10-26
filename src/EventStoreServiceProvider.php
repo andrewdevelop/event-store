@@ -20,10 +20,10 @@ class EventStoreServiceProvider extends ServiceProvider implements DeferrablePro
 		
         $driver = $this->app->config->get('eventstore.connection');
 
-        $manager = new EventStoreManager($this->app);
 
-    	$this->app->singleton(EventStore::class, function($app) use ($manager, $driver) {
-            return $manager->make($driver);
+        $manager = new EventStoreManager($this->app);
+        $this->app->singleton(EventStore::class, function($app) use ($manager, $driver) {
+            return $manager->driver($driver);
     	});
     }
 
