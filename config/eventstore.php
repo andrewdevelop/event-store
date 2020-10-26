@@ -18,5 +18,11 @@ return [
 	        'schema' 	=> env('ES_SCHEMA', 'public'),
 	        'sslmode' 	=> env('ES_SSL_MODE', 'prefer'),
 	    ],
+        'filesystem' => [
+            'database' => env('ES_DATABASE', storage_path('.eventstore')),
+        ],
+        'in_memory' => [
+            'database' => null,
+        ],
 	],
 ];

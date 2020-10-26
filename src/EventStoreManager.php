@@ -1,54 +1,61 @@
-<?php 
+<?php
 
 namespace Core\EventStore;
 
+use Core\EventSourcing\Contracts\EventStore;
+use Core\EventStore\Drivers\FilesystemAdapter;
+use Core\EventStore\Drivers\InMemoryAdapter;
+use Core\EventStore\Drivers\PgsqlAdapter;
 use Illuminate\Support\Manager;
 use InvalidArgumentException;
 
-use Core\EventSourcing\Contracts\EventStore;
-use Core\EventStore\Drivers\PostgresqlAdapter;
-use Core\EventStore\Drivers\InMemoryAdapter;
-
 class EventStoreManager extends Manager
 {
-
-    /**
-     * Create an instance of the specified driver.
-     * @return \Core\EventStore\Drivers\InMemoryAdapter
-     */
-    protected function createInMemoryDriver()
-    {
-        return $this->buildProvider(InMemoryAdapter::class);
-    }    
-
-    /**
-     * Create an instance of the specified driver.
-     * @return \Core\EventStore\Drivers\PostgresqlAdapter
-     */
-    protected function createPgsqlDriver()
-    {
-        return $this->buildProvider(PostgresqlAdapter::class);
-    }
-
-    /**
-     * Build a provider instance.
-     * @param  string  $provider
-     * @param  array  $config
-     * @return \Laravel\Socialite\Two\AbstractProvider
-     */
-    public function buildProvider($provider, $config = null)
-    {
-        return new $provider($this->app);
-    }
-
     /**
      * Get the default driver name.
-     * @throws \InvalidArgumentException
      * @return string
+     * @throws InvalidArgumentException
      */
     public function getDefaultDriver()
     {
         throw new InvalidArgumentException('No Eventstore driver was specified.');
+    }
+
+    /**
+     * Build a driver instance.
+     * @param string $class
+     * @return EventStore
+     */
+    protected function resolve($class)
+    {
+        return $this->container->make($class, ['config' => $this->config]);
+    }
+
+    /**
+     * Create an instance of the specified driver.
+     * @return EventStore
+     */
+    protected function createInMemoryDriver()
+    {
+        return $this->resolve(InMemoryAdapter::class);
+    }
+
+    /**
+     * Create an instance of the specified driver.
+     * @return EventStore
+     */
+    protected function createFilesystemDriver()
+    {
+        return $this->resolve(FilesystemAdapter::class);
+    }
+
+    /**
+     * Create an instance of the specified driver.
+     * @return EventStore
+     */
+    protected function createPgsqlDriver()
+    {
+        return $this->resolve(PgsqlAdapter::class);
     }
 }
 

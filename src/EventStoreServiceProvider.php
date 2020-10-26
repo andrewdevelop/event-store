@@ -2,20 +2,13 @@
 
 namespace Core\EventStore;
 
+use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 
 use Core\EventSourcing\Contracts\EventStore;
 
-class EventStoreServiceProvider extends ServiceProvider
+class EventStoreServiceProvider extends ServiceProvider implements DeferrableProvider
 {
-    
-    /**
-     * Indicates if loading of the provider is deferred.
-     * @var bool
-     */
-    protected $defer = true;
-
-
     /**
      * Register the service provider.
      * @return void
@@ -26,26 +19,13 @@ class EventStoreServiceProvider extends ServiceProvider
         $this->app->configure('eventstore');
 		
         $driver = $this->app->config->get('eventstore.connection');
-        $config = $this->app->config->get("eventstore.connections.$driver");
-
-        if ($driver == 'in_memory' || $driver == null) {
-            $connection = null;
-        } else {
-            /** @var \Illuminate\Database\Connection */
-            $factory = new \Illuminate\Database\Connectors\ConnectionFactory($this->app);
-            $connection = $factory->make($config, $driver);
-        }
 
         $manager = new EventStoreManager($this->app);
-        $eventstore = $manager->driver($driver);
-        $eventstore->connection($connection);
 
-    	$this->app->singleton(EventStore::class, function($app) use ($eventstore) {
-	        return $eventstore;
+    	$this->app->singleton(EventStore::class, function($app) use ($manager, $driver) {
+            return $manager->make($driver);
     	});
-        
     }
-
 
     /**
      * Get the services provided by the provider.

@@ -1,79 +1,55 @@
-<?php 
+<?php
 
 namespace Core\EventStore\Drivers;
 
-use Core\Contracts\Event;
 use Core\EventSourcing\Contracts\EventStore;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Core\EventStore\Exceptions\NotFoundException;
-use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Collection;
 
 class InMemoryAdapter implements EventStore
 {
+    /**
+     * Data store.
+     * @var Collection
+     */
+    protected $store;
 
-	/**
-	 * IoC container instance.
-	 * @var \Illuminate\Contracts\Container\Container
-	 */
-	protected $container;
+    /**
+     * InMemoryAdapter constructor.
+     */
+    public function __construct()
+    {
+        $this->store = new Collection();
+    }
 
-	/**
-	 * Data store.
-	 * @var \Illuminate\Support\Collection
-	 */
-	protected $store;
+    /**
+     * @param iterable $events
+     * @return bool|Collection
+     */
+    public function commit(iterable $events)
+    {
+        $this->store = $this->store->merge($events);
+        return $this->store;
+    }
 
-	/**
-	 * Constructor.
-	 * @param PhpOrient $query 
-	 */
-	public function __construct(Container $container)
-	{
-		$this->container = $container;
-		$this->store = new Collection();
-	}
+    /**
+     * @param string $aggregate_id
+     * @param null $version
+     * @return array
+     */
+    public function load($aggregate_id, $version = null)
+    {
+        return $this->store
+            ->filter(function ($e) use ($aggregate_id) {
+                return $e['aggregate_id'] == $aggregate_id;
+            })
+            ->toArray();
+    }
 
-	/**
-	 * ConnectionInterface
-	 * @param  \Illuminate\Database\ConnectionInterface $connection
-	 * @return self
-	 */
-	public function connection($connection)
-	{
-		return $this;
-	}
-
-	/**
-	 * Initialize database if necessary.
-	 * @return void
-	 */
-	public function init()
-	{
-		return true;
-	}
-
-	
-	public function commit(iterable $events) 
-	{
-		$this->store = $this->store->merge($events);
-		return $this->store;
-	}
-
-
-	public function load($aggregate_id, $version = null) 
-	{
-		return $this->store
-			->filter(function($e) use ($aggregate_id) {
-				return $e['aggregate_id'] == $aggregate_id;
-			})
-			->toArray();	
-	}
-
-
-	public function loadAll()
-	{
-		return $this->store->toArray();
-	}
-
+    /**
+     * @return array
+     */
+    public function loadAll()
+    {
+        return $this->store->toArray();
+    }
 }
