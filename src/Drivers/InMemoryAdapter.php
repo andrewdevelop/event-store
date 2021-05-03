@@ -23,12 +23,12 @@ class InMemoryAdapter implements EventStore
 
     /**
      * @param iterable $events
-     * @return bool|Collection
+     * @return bool
      */
     public function commit(iterable $events)
     {
         $this->store = $this->store->merge($events);
-        return $this->store;
+        return true;
     }
 
     /**

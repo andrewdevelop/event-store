@@ -27,13 +27,14 @@ class FilesystemAdapter implements EventStore
 
     /**
      * @param iterable $events
-     * @return bool|void
+     * @return bool
      */
     public function commit(iterable $events)
     {
         $fp = fopen($this->path, 'a');
         foreach ($events as $event) fwrite($fp, $event . PHP_EOL);
         fclose($fp);
+        return true;
     }
 
     /**

@@ -66,11 +66,15 @@ class PgsqlAdapter implements EventStore
         });
     }
 
+    /**
+     * @param iterable $events
+     * @return bool
+     */
     public function commit(iterable $events)
     {
         return $this->connection
             ->table($this->table)
-            ->insert($events);
+            ->insert((array)$events);
     }
 
     /**
