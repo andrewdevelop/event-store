@@ -32,7 +32,7 @@ class FilesystemAdapter implements EventStore
     public function commit(iterable $events)
     {
         $fp = fopen($this->path, 'a');
-        foreach ($events as $event) fwrite($fp, $event . PHP_EOL);
+        foreach ($events as $event) fwrite($fp, json_encode($event, JSON_UNESCAPED_UNICODE) . PHP_EOL);
         fclose($fp);
         return true;
     }
