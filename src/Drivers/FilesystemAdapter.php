@@ -46,7 +46,7 @@ class FilesystemAdapter implements EventStore
     {
         $events = LazyCollection::make(function () {
             $fp = fopen($this->path, 'r');
-            while ($row = fgets($fp)) yield json_decode($row, true);
+            while ($row = fgets($fp)) yield json_decode($row, false);
             fclose($fp);
         })->filter(function ($row) use ($aggregate_id) {
             return $row['aggregate_id'] == $aggregate_id;
@@ -63,7 +63,7 @@ class FilesystemAdapter implements EventStore
     {
         return LazyCollection::make(function () {
             $fp = fopen($this->path, 'r');
-            while ($row = fgets($fp)) yield json_decode($row, true);
+            while ($row = fgets($fp)) yield json_decode($row, false);
             fclose($fp);
         });
     }
