@@ -49,7 +49,7 @@ class FilesystemAdapter implements EventStore
             while ($row = fgets($fp)) yield json_decode($row, false);
             fclose($fp);
         })->filter(function ($row) use ($aggregate_id) {
-            return $row['aggregate_id'] == $aggregate_id;
+            return $row->aggregate_id == $aggregate_id;
         });
         if ($events->count() == 0) throw new NotFoundException($aggregate_id);
 
