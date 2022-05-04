@@ -1,16 +1,19 @@
 {
     "name": "andrewdevelop/event-store",
-    "description": "A basic event store for Lumen",
+    "description": "A basic event store for Laravel/Lumen 9",
     "type": "package",
     "require": {
-        "php": "^7.2",
         "andrewdevelop/hex-contracts": "dev-master",
         "andrewdevelop/event-sourcing": "dev-master",
-        "illuminate/container": "^6.0",
-        "illuminate/database": "^6.0",
-        "illuminate/support": "^6.0",
-        "illuminate/config": "^6.0",
+        "illuminate/config": "^9.0",
+        "illuminate/container": "^9.0",
+        "illuminate/database": "^9.0",
+        "illuminate/support": "^9.0",
+        "php": "^8.0.2",
         "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5.10"
     },
     "license": "MIT",
     "authors": [
