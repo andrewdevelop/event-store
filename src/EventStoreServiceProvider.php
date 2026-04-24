@@ -2,10 +2,9 @@
 
 namespace Core\EventStore;
 
+use Core\EventSourcing\Contracts\EventStore;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
-
-use Core\EventSourcing\Contracts\EventStore;
 
 class EventStoreServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -15,16 +14,20 @@ class EventStoreServiceProvider extends ServiceProvider implements DeferrablePro
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/eventstore.php', 'eventstore');
-        $this->app->configure('eventstore');
-		
-        $driver = $this->app->config->get('eventstore.connection');
-
+        $this->configure();
 
         $manager = new EventStoreManager($this->app);
-        $this->app->singleton(EventStore::class, function($app) use ($manager, $driver) {
-            return $manager->driver($driver);
-    	});
+
+        $this->app->singleton(EventStore::class, fn() => $manager->driver($this->app->config->get('eventstore.connection')));
+    }
+
+    protected function configure(): void
+    {
+        $this->mergeConfigFrom(__DIR__ . '/../config/eventstore.php', 'eventstore');
+        
+        if (method_exists($this->app, 'configure')) {
+            $this->app->configure('eventstore');
+        }
     }
 
     /**

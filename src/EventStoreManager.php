@@ -11,6 +11,14 @@ use InvalidArgumentException;
 
 class EventStoreManager extends Manager
 {
+    protected bool $with_tx = false;
+
+    public function withTransactions(?bool $flag = true): static
+    {
+        $this->with_tx = $flag;
+        return $this;
+    }
+
     /**
      * Get the default driver name.
      * @return string
@@ -26,7 +34,7 @@ class EventStoreManager extends Manager
      * @param string $class
      * @return EventStore
      */
-    protected function resolve($class)
+    protected function resolve($class): EventStore
     {
         return $this->container->make($class, ['config' => $this->config]);
     }
@@ -35,7 +43,7 @@ class EventStoreManager extends Manager
      * Create an instance of the specified driver.
      * @return EventStore
      */
-    protected function createInMemoryDriver()
+    protected function createInMemoryDriver(): EventStore
     {
         return $this->resolve(InMemoryAdapter::class);
     }
@@ -44,7 +52,7 @@ class EventStoreManager extends Manager
      * Create an instance of the specified driver.
      * @return EventStore
      */
-    protected function createFilesystemDriver()
+    protected function createFilesystemDriver(): EventStore
     {
         return $this->resolve(FilesystemAdapter::class);
     }
@@ -53,7 +61,7 @@ class EventStoreManager extends Manager
      * Create an instance of the specified driver.
      * @return EventStore
      */
-    protected function createPgsqlDriver()
+    protected function createPgsqlDriver(): EventStore
     {
         return $this->resolve(PgsqlAdapter::class);
     }
