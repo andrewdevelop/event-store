@@ -2,15 +2,27 @@
 
 namespace Core\EventStore\Tests;
 
-use Core\EventStore\EventStoreServiceProvider;
-use Orchestra\Testbench\TestCase as Orchestra;
+use Illuminate\Config\Repository;
+use Illuminate\Container\Container;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use PHPUnit\Framework\TestCase as BaseTestCase;
 
-class TestCase extends Orchestra
+abstract class TestCase extends BaseTestCase
 {
-    protected function getPackageProviders($app)
+    protected Container $container;
+
+    protected Repository $config;
+
+    protected function setUp(): void
     {
-        return [
-            EventStoreServiceProvider::class,
-        ];
+        parent::setUp();
+
+        $this->config = new Repository([
+            'eventstore' => require __DIR__ . '/../config/eventstore.php',
+        ]);
+
+        $this->container = new Container();
+        $this->container->instance('config', $this->config);
+        $this->container->instance(ConfigRepository::class, $this->config);
     }
 }

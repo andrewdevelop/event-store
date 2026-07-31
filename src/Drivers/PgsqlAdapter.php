@@ -37,6 +37,11 @@ class PgsqlAdapter implements EventStore, Transactional
     protected mixed $connection;
 
     /**
+     * @var bool
+     */
+    protected bool $stores_pii = false;
+
+    /**
      * Constructor.
      * @param Repository $config
      * @param ConnectionFactory $connections
@@ -76,8 +81,16 @@ class PgsqlAdapter implements EventStore, Transactional
                 // Indexes for faster queries
                 $table->index(['aggregate_id', 'created_at'], 'idx_aggregate_created');
                 $table->index(['created_at'], 'idx_created');
+
+                if ($this->stores_pii) $table->uuid('pii_id')->nullable();
             });
         }
+    }
+
+    public function withStoringPii(bool $flag = true): EventStore
+    {
+        $this->stores_pii = $flag;
+        return $this;
     }
 
     /**
@@ -121,9 +134,12 @@ class PgsqlAdapter implements EventStore, Transactional
      */
     public function load($aggregate_id, $version = null)
     {
+        $exp = 'id, name, version, aggregate_id, aggregate_type, aggregate_version, payload, metadata, created_at';
+        if ($this->stores_pii) $exp .= ', pii_id';
+
         $events = $this->getConnection()
             ->table($this->table)
-            ->selectRaw('id, name, version, aggregate_id, aggregate_type, aggregate_version, payload, metadata, created_at')
+            ->selectRaw($exp)
             ->where('aggregate_id', $aggregate_id)
             ->orderBy('created_at', 'ASC')
             ->when($version !== null, function (Builder $q) use ($version) {
@@ -141,9 +157,12 @@ class PgsqlAdapter implements EventStore, Transactional
      */
     public function loadAll()
     {
+        $exp = 'id, name, version, aggregate_id, aggregate_type, aggregate_version, payload, metadata, created_at';
+        if ($this->stores_pii) $exp .= ', pii_id';
+
         return $this->getConnection()
             ->table($this->table)
-            ->selectRaw('id, name, version, aggregate_id, aggregate_type, aggregate_version, payload, metadata, created_at')
+            ->selectRaw($exp)
             ->whereNotNull('aggregate_id')
             ->orderBy('created_at', 'ASC')
             ->cursor();

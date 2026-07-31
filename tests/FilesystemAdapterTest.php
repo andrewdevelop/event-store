@@ -4,7 +4,6 @@ namespace Core\EventStore\Tests;
 
 use Core\EventStore\Drivers\FilesystemAdapter;
 use Core\EventStore\Exceptions\NotFoundException;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\LazyCollection;
 
 class FilesystemAdapterTest extends TestCase
@@ -20,7 +19,7 @@ class FilesystemAdapterTest extends TestCase
             unlink($this->testFilePath);
         }
         
-        Config::set('eventstore.connections.filesystem.database', $this->testFilePath);
+        $this->config->set('eventstore.connections.filesystem.database', $this->testFilePath);
     }
 
     protected function tearDown(): void
@@ -33,16 +32,16 @@ class FilesystemAdapterTest extends TestCase
 
     public function test_it_throws_exception_if_no_path_configured()
     {
-        Config::set('eventstore.connections.filesystem.database', null);
+        $this->config->set('eventstore.connections.filesystem.database', null);
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage("Undefined config eventstore.connections.filesystem.database");
         
-        new FilesystemAdapter(app('config'));
+        new FilesystemAdapter($this->config);
     }
 
     public function test_it_commits_events_to_file()
     {
-        $adapter = new FilesystemAdapter(app('config'));
+        $adapter = new FilesystemAdapter($this->config);
         
         $events = [
             ['aggregate_id' => '1', 'type' => 'A'],
@@ -60,7 +59,7 @@ class FilesystemAdapterTest extends TestCase
 
     public function test_it_loads_events_by_aggregate_id()
     {
-        $adapter = new FilesystemAdapter(app('config'));
+        $adapter = new FilesystemAdapter($this->config);
         
         $events = [
             ['aggregate_id' => '1', 'type' => 'A'],
@@ -83,7 +82,7 @@ class FilesystemAdapterTest extends TestCase
 
     public function test_it_throws_not_found_exception_when_aggregate_id_not_found()
     {
-        $adapter = new FilesystemAdapter(app('config'));
+        $adapter = new FilesystemAdapter($this->config);
         
         $adapter->commit([
             ['aggregate_id' => '1', 'type' => 'A']
@@ -95,7 +94,7 @@ class FilesystemAdapterTest extends TestCase
 
     public function test_it_loads_all_events()
     {
-        $adapter = new FilesystemAdapter(app('config'));
+        $adapter = new FilesystemAdapter($this->config);
         
         $events = [
             ['aggregate_id' => '1', 'type' => 'A', 'version' => 1],
@@ -113,7 +112,7 @@ class FilesystemAdapterTest extends TestCase
 
     public function test_it_throws_concurrency_exception_on_duplicate_version()
     {
-        $adapter = new FilesystemAdapter(app('config'));
+        $adapter = new FilesystemAdapter($this->config);
         
         $adapter->commit([
             ['aggregate_id' => '1', 'type' => 'A', 'version' => 1]

@@ -24,7 +24,7 @@ class PgsqlAdapterTest extends TestCase
 
     public function test_init_creates_table_if_not_exists()
     {
-        $config = app('config');
+        $config = $this->config;
         $connectionFactory = Mockery::mock(ConnectionFactory::class);
         $connection = Mockery::mock(Connection::class);
         $schemaBuilder = Mockery::mock(PostgresBuilder::class);
@@ -67,7 +67,7 @@ class PgsqlAdapterTest extends TestCase
 
     public function test_init_does_not_create_table_if_exists()
     {
-        $config = app('config');
+        $config = $this->config;
         $connectionFactory = Mockery::mock(ConnectionFactory::class);
         $connection = Mockery::mock(Connection::class);
         $schemaBuilder = Mockery::mock(PostgresBuilder::class);
@@ -86,7 +86,7 @@ class PgsqlAdapterTest extends TestCase
 
     public function test_commit_inserts_events()
     {
-        $config = app('config');
+        $config = $this->config;
         $connectionFactory = Mockery::mock(ConnectionFactory::class);
         $connection = Mockery::mock(Connection::class);
         $builder = Mockery::mock(Builder::class);
@@ -109,7 +109,7 @@ class PgsqlAdapterTest extends TestCase
 
     public function test_commit_throws_concurrency_exception_on_duplicate_aggregate_version()
     {
-        $config = app('config');
+        $config = $this->config;
         $connectionFactory = Mockery::mock(ConnectionFactory::class);
         $connection = Mockery::mock(Connection::class);
         $builder = Mockery::mock(Builder::class);
@@ -138,7 +138,7 @@ class PgsqlAdapterTest extends TestCase
 
     public function test_exists_returns_boolean()
     {
-        $config = app('config');
+        $config = $this->config;
         $connectionFactory = Mockery::mock(ConnectionFactory::class);
         $connection = Mockery::mock(Connection::class);
         $builder = Mockery::mock(Builder::class);
@@ -154,7 +154,7 @@ class PgsqlAdapterTest extends TestCase
 
     public function test_load_returns_lazy_collection_of_events()
     {
-        $config = app('config');
+        $config = $this->config;
         $connectionFactory = Mockery::mock(ConnectionFactory::class);
         $connection = Mockery::mock(Connection::class);
         $builder = Mockery::mock(Builder::class);
@@ -182,7 +182,7 @@ class PgsqlAdapterTest extends TestCase
 
     public function test_load_throws_not_found_exception()
     {
-        $config = app('config');
+        $config = $this->config;
         $connectionFactory = Mockery::mock(ConnectionFactory::class);
         $connection = Mockery::mock(Connection::class);
         $builder = Mockery::mock(Builder::class);
@@ -206,7 +206,7 @@ class PgsqlAdapterTest extends TestCase
 
     public function test_load_all_returns_all_events()
     {
-        $config = app('config');
+        $config = $this->config;
         $connectionFactory = Mockery::mock(ConnectionFactory::class);
         $connection = Mockery::mock(Connection::class);
         $builder = Mockery::mock(Builder::class);
